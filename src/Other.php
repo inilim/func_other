@@ -4,6 +4,23 @@ namespace Inilim\FuncOther;
 
 class Other
 {
+    function gettype($value): string
+    {
+        $r = \gettype($value);
+        return match ($r) {
+            'NULL'   => 'null',
+            'double' => 'float',
+            'object' => (static function ($value) {
+                if ($value instanceof \UnitEnum) {
+                    return 'enum';
+                }
+                return 'object';
+            })->__invoke($value),
+
+            default  => $r,
+        };
+    }
+
     /**
      * @return array{message:string,line:int,code:int,file:string,trace_string:string,class_string:class-string}
      */
