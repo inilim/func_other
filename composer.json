@@ -1,0 +1,25 @@
+{
+    "name": "inilim/func_other",
+    "description": "func_other",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Inilim\\FuncOther\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "inilim"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "phpstan/phpstan": "@stable",
+        "inilim/dump": "dev-main"
+    }
+}
