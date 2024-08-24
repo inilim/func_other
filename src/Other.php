@@ -9,6 +9,7 @@ class Other
      */
     function getExceptionDetails(\Throwable $e): array
     {
+        de($e->getTraceAsString());
         return [
             'message'      => $e->getMessage(),
             'line'         => $e->getLine(),
