@@ -6,7 +6,10 @@
     "autoload": {
         "psr-4": {
             "Inilim\\FuncOther\\": "src/"
-        }
+        },
+        "files": [
+            "function.php"
+        ]
     },
     "authors": [
         {

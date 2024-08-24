@@ -1,6 +1,6 @@
 <?php
 
-namespace Inilim\Env;
+namespace Inilim\FuncOther;
 
 class Other
 {
