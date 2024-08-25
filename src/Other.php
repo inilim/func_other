@@ -13,6 +13,8 @@ class Other
             'object' => (static function ($value) {
                 if ($value instanceof \UnitEnum) {
                     return 'enum';
+                } elseif ($value instanceof \Throwable) {
+                    return 'object exception';
                 }
                 return 'object';
             })->__invoke($value),
