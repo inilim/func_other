@@ -4,6 +4,9 @@ namespace Inilim\FuncOther;
 
 class Other
 {
+    /**
+     * Possibles values for the returned string are: "boolean" "integer" "float" "string" "array" "object" "object exception" "enum" "resource" "null" "unknown type" "resource (closed)"
+     */
     function gettype($value): string
     {
         $r = \gettype($value);
