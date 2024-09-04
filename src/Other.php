@@ -26,18 +26,6 @@ class Other
         };
     }
 
-    function getReflectionClass(object|string $class_of_obj, bool $throw = false): ?\ReflectionClass
-    {
-        if (\is_string($class_of_obj)) {
-            if (!\class_exists($class_of_obj)) {
-                return $throw
-                    ? throw new \ReflectionException('class not found ' . $class_of_obj)
-                    : null;
-            }
-        }
-        return new \ReflectionClass($class_of_obj);
-    }
-
     /**
      * @return array{message:string,line:int,code:int,file:string,trace:string|array,class:class-string}
      */
@@ -51,6 +39,18 @@ class Other
             'trace'   => $trace_as_array ? $e->getTrace() : $e->getTraceAsString(),
             'class'   => \get_class($e),
         ];
+    }
+
+    function getReflectionClass(object|string $class_of_obj, bool $throw = false): ?\ReflectionClass
+    {
+        if (\is_string($class_of_obj)) {
+            if (!\class_exists($class_of_obj)) {
+                return $throw
+                    ? throw new \ReflectionException('class not found ' . $class_of_obj)
+                    : null;
+            }
+        }
+        return new \ReflectionClass($class_of_obj);
     }
 
     /**
