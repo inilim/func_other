@@ -38,6 +38,6 @@ $obj = new ChildClass;
 $class = \Inilim\FuncOther\Other::class;
 
 
-$m = \_other()->getNameMethodsFromObjOrClass($obj, except_public_methods: true);
-
+$m = \_other()->getReflectionClass(\ReflectionClass::class);
+$m = \_other()->getNameMethodsFromObjOrClass($m, except_parent_methods: true);
 de($m);

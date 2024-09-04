@@ -54,12 +54,12 @@ class Other
     }
 
     /**
-     * @param object|class-string $class_of_obj
+     * @param object|class-string|\ReflectionClass $class_or_obj_or_ref
      * @param string[] $except_methods
      * @return \ReflectionMethod[]|array{}
      */
     function getRefMethodsFromObjOrClass(
-        object|string $class_of_obj,
+        object|string $class_or_obj_or_ref,
         array $except_methods          = [],
         bool $except_magic_methods     = false,
         bool $except_private_methods   = false,
@@ -67,7 +67,12 @@ class Other
         bool $except_public_methods    = false,
         bool $except_parent_methods    = false,
     ): array {
-        $ref     = $this->getReflectionClass($class_of_obj, true);
+
+        if ($class_or_obj_or_ref instanceof \ReflectionClass) {
+            $ref = $class_or_obj_or_ref;
+        } else {
+            $ref = $this->getReflectionClass($class_or_obj_or_ref, true);
+        }
         $methods = $ref->getMethods();
 
         if (!$methods) {
@@ -109,12 +114,12 @@ class Other
     }
 
     /**
-     * @param object|class-string $class_of_obj
+     * @param object|class-string|\ReflectionClass $class_or_obj_or_ref
      * @param string[] $except_methods
      * @return string[]|array{}
      */
     function getNameMethodsFromObjOrClass(
-        object|string $class_of_obj,
+        object|string $class_or_obj_or_ref,
         array $except_methods          = [],
         bool $except_magic_methods     = false,
         bool $except_private_methods   = false,
@@ -123,7 +128,7 @@ class Other
         bool $except_parent_methods    = false,
     ): array {
         return \array_column($this->getRefMethodsFromObjOrClass(
-            class_of_obj: $class_of_obj,
+            class_or_obj_or_ref: $class_or_obj_or_ref,
             except_methods: $except_methods,
             except_magic_methods: $except_magic_methods,
             except_private_methods: $except_private_methods,
