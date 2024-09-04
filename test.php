@@ -19,6 +19,9 @@ class ParentClass
     static private function parent_static_priv() {}
 }
 
+#[gegege]
+#[gegege]
+#[gegege]
 class ChildClass extends ParentClass
 {
     function func() {}
@@ -34,10 +37,11 @@ class ChildClass extends ParentClass
 
 
 
-$obj = new ChildClass;
-$class = \Inilim\FuncOther\Other::class;
+// $obj = new ChildClass;
+// $class = \Inilim\FuncOther\Other::class;
 
 
-$m = \_other()->getReflectionClass(\ReflectionClass::class);
-$m = \_other()->getNameMethodsFromObjOrClass($m, except_parent_methods: true);
+$m = \_other()->getRefAttrClass(ChildClass::class);
+
+// $m = \_other()->getNameMethodsFromObjOrClass($m);
 de($m);

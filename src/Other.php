@@ -41,6 +41,9 @@ class Other
         ];
     }
 
+    /**
+     * @param object|class-string $class_of_obj
+     */
     function getReflectionClass(object|string $class_of_obj, bool $throw = false): ?\ReflectionClass
     {
         if (\is_string($class_of_obj)) {
@@ -61,6 +64,7 @@ class Other
     function getRefMethodsFromObjOrClass(
         object|string $class_or_obj_or_ref,
         array $except_methods          = [],
+        bool $throw                    = false,
         bool $except_magic_methods     = false,
         bool $except_private_methods   = false,
         bool $except_protected_methods = false,
@@ -71,7 +75,7 @@ class Other
         if ($class_or_obj_or_ref instanceof \ReflectionClass) {
             $ref = $class_or_obj_or_ref;
         } else {
-            $ref = $this->getReflectionClass($class_or_obj_or_ref, true);
+            $ref = $this->getReflectionClass($class_or_obj_or_ref, $throw);
         }
         $methods = $ref->getMethods();
 
@@ -121,6 +125,7 @@ class Other
     function getNameMethodsFromObjOrClass(
         object|string $class_or_obj_or_ref,
         array $except_methods          = [],
+        bool $throw                    = false,
         bool $except_magic_methods     = false,
         bool $except_private_methods   = false,
         bool $except_protected_methods = false,
@@ -130,11 +135,26 @@ class Other
         return \array_column($this->getRefMethodsFromObjOrClass(
             class_or_obj_or_ref: $class_or_obj_or_ref,
             except_methods: $except_methods,
+            throw: $throw,
             except_magic_methods: $except_magic_methods,
             except_private_methods: $except_private_methods,
             except_protected_methods: $except_protected_methods,
             except_public_methods: $except_public_methods,
             except_parent_methods: $except_parent_methods,
         ), 'name');
+    }
+
+    /**
+     * @param object|class-string|\ReflectionClass $class_or_obj_or_ref
+     * @return \ReflectionAttribute[]|array{}|null
+     */
+    function getRefAttrClass(object|string $class_or_obj_or_ref, bool $throw = false): ?array
+    {
+        if ($class_or_obj_or_ref instanceof \ReflectionClass) {
+            $ref = $class_or_obj_or_ref;
+        } else {
+            $ref = $this->getReflectionClass($class_or_obj_or_ref, $throw);
+        }
+        return $ref?->getAttributes();
     }
 }
