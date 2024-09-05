@@ -42,6 +42,26 @@ class Other
     }
 
     /**
+     * @template T
+     * @param T $default
+     * @return mixed|T
+     */
+    function tryCallMethod(object $obj, string $method_name, array $args = [], $default = null)
+    {
+        try {
+            // $result = $obj->$method_name(...$args);
+            $result = \call_user_func([$obj, $method_name], ...$args);
+        } catch (\Throwable) {
+            return $default;
+        }
+        return $result;
+    }
+
+    // ------------------------------------------------------------------
+    // 
+    // ------------------------------------------------------------------
+
+    /**
      * @param object|class-string $class_of_obj
      */
     function getReflectionClass(object|string $class_of_obj, bool $throw = false): ?\ReflectionClass

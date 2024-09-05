@@ -8,6 +8,10 @@ Dump::init();
 
 class ParentClass
 {
+    function dawdwd()
+    {
+        return '123123';
+    }
     function func() {}
 
     function parent_pub() {}
@@ -18,6 +22,21 @@ class ParentClass
     static protected function parent_static_prot() {}
     static private function parent_static_priv() {}
 }
+
+
+$obj = new ParentClass;
+
+
+$res = ;
+
+// $res = _other()->tryCallMethod($obj, 'dawdwd');
+dde($res);
+
+
+
+
+
+de();
 
 #[gegege]
 #[gegege]
