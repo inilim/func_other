@@ -57,6 +57,30 @@ class Other
         return $result;
     }
 
+    // function prepareObjForSerialize(object $obj)
+    // {
+    //     if ($obj instanceof \JsonSerializable) {
+    //         return $obj->jsonSerialize();
+    //     }
+    //     if ($obj instanceof \Serializable) {
+    //         $v = $this->tryCallMethod($obj, '__serialize');
+    //         if (\is_array($v)) {
+    //             return $v;
+    //         }
+    //     }
+
+    //     if ($obj instanceof \UnitEnum) {
+    //         return $obj::class . '::' . $obj->name;
+    //     }
+
+    //     if (\method_exists($obj, 'toArray')) {
+    //         $v = $this->tryCallMethod($obj, 'toArray');
+    //         if (\is_array($v)) {
+    //             return $v;
+    //         }
+    //     }
+    // }
+
     // ------------------------------------------------------------------
     // 
     // ------------------------------------------------------------------
