@@ -1,9 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inilim\FuncOther;
 
 class Other
 {
+    function isEnum($value): bool
+    {
+        if (\is_object($value)) {
+            return $value instanceof \UnitEnum;
+        } elseif (\is_string($value)) {
+            return \enum_exists($value);
+        }
+        return false;
+    }
+
     /**
      * Possibles values for the returned string are: "boolean" "integer" "float" "string" "array" "object" "object exception" "enum" "resource" "null" "unknown type" "resource (closed)"
      */
@@ -57,29 +69,58 @@ class Other
         return $result;
     }
 
-    // function prepareObjForSerialize(object $obj)
-    // {
-    //     if ($obj instanceof \JsonSerializable) {
-    //         return $obj->jsonSerialize();
-    //     }
-    //     if ($obj instanceof \Serializable) {
-    //         $v = $this->tryCallMethod($obj, '__serialize');
-    //         if (\is_array($v)) {
-    //             return $v;
-    //         }
-    //     }
+    function prepareArrayForSerializeRecursive(array &$value): void
+    {
+        \array_walk_recursive($value, function (&$sub_val) {
+            if (\is_object($sub_val)) {
+                $sub_val = $this->prepareObjForSerialize($sub_val);
+            } elseif (\is_resource($sub_val)) {
+                $sub_val = \print_r($sub_val, true);
+            }
+        });
+    }
 
-    //     if ($obj instanceof \UnitEnum) {
-    //         return $obj::class . '::' . $obj->name;
-    //     }
+    /**
+     * @return mixed
+     */
+    function prepareObjForSerialize(object $obj)
+    {
+        if ($obj instanceof \JsonSerializable) {
+            $v = $obj->jsonSerialize();
+            // jsonSerialize return mixed
+            if (\is_array($v)) {
+                $this->prepareArrayForSerializeRecursive($v);
+                return $v;
+            } else {
+                $this->prepareArrayForSerializeRecursive([$v]);
+                return $v[0];
+            }
+        }
 
-    //     if (\method_exists($obj, 'toArray')) {
-    //         $v = $this->tryCallMethod($obj, 'toArray');
-    //         if (\is_array($v)) {
-    //             return $v;
-    //         }
-    //     }
-    // }
+        if ($obj instanceof \Serializable) {
+            $v = $this->tryCallMethod($obj, '__serialize');
+            if (\is_array($v)) {
+                $this->prepareArrayForSerializeRecursive($v);
+                return $v;
+            }
+        }
+
+        if ($obj instanceof \UnitEnum) {
+            return $obj::class . '::' . $obj->name;
+        }
+
+        if (\method_exists($obj, 'toArray')) {
+            $v = $this->tryCallMethod($obj, 'toArray');
+            if (\is_array($v)) {
+                $this->prepareArrayForSerializeRecursive($v);
+                return $v;
+            }
+        }
+
+        $v = (array)$obj;
+        $this->prepareArrayForSerializeRecursive($v);
+        return $v;
+    }
 
     // ------------------------------------------------------------------
     // 
