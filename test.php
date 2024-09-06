@@ -27,10 +27,16 @@ class ParentClass
 $obj = new ParentClass;
 
 
-$res = ;
 
-// $res = _other()->tryCallMethod($obj, 'dawdwd');
-dde($res);
+
+$res = _other()->tryCallCallable(function ($a, $b) {
+    throw new \Exception();
+    return [123.123];
+}, ['', 123], exception: $e);
+
+
+
+de($e);
 
 
 

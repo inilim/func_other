@@ -53,21 +53,47 @@ class Other
         ];
     }
 
+    // ------------------------------------------------------------------
+    // try call
+    // ------------------------------------------------------------------
+
+    /**
+     * @template C
+     * @template D
+     * @template A
+     * 
+     * @param callable(...A):C $callable
+     * @param array<A> $args
+     * @param D $default
+     * @return C|D
+     */
+    function tryCallCallable($callable, array $args = [], $default = null, ?\Throwable &$exception = null)
+    {
+        try {
+            if (!\is_callable($callable)) {
+                throw new \Exception('$callable give not callable');
+            }
+            $result = \call_user_func($callable, ...$args);
+        } catch (\Throwable $e) {
+            $exception = $e;
+            return $default;
+        }
+        return $result;
+    }
+
     /**
      * @template T
      * @param T $default
      * @return mixed|T
      */
-    function tryCallMethod(object $obj, string $method_name, array $args = [], $default = null)
+    function tryCallMethod(object $obj, string $method_name, array $args = [], $default = null, ?\Throwable &$exception = null)
     {
-        try {
-            // $result = $obj->$method_name(...$args);
-            $result = \call_user_func([$obj, $method_name], ...$args);
-        } catch (\Throwable) {
-            return $default;
-        }
-        return $result;
+        return $this->tryCallCallable([$obj, $method_name], $args, $default, $exception);
     }
+
+    // ------------------------------------------------------------------
+    // prepare for serialize
+    // ------------------------------------------------------------------
 
     function prepareArrayForSerializeRecursive(array &$value): void
     {
@@ -86,22 +112,29 @@ class Other
     function prepareObjForSerialize(object $obj)
     {
         if ($obj instanceof \JsonSerializable) {
-            $v = $obj->jsonSerialize();
-            // jsonSerialize return mixed
-            if (\is_array($v)) {
-                $this->prepareArrayForSerializeRecursive($v);
-                return $v;
-            } else {
-                $this->prepareArrayForSerializeRecursive([$v]);
-                return $v[0];
+            $e = null;
+            $v = $this->tryCallMethod($obj, 'jsonSerialize', exception: $e);
+            // jsonSerialize return mixed OR throw exception
+            if ($e === null) {
+                if (\is_array($v)) {
+                    $this->prepareArrayForSerializeRecursive($v);
+                    return $v;
+                } else {
+                    $this->prepareArrayForSerializeRecursive([$v]);
+                    return $v[0];
+                }
             }
         }
 
         if ($obj instanceof \Serializable) {
-            $v = $this->tryCallMethod($obj, '__serialize');
-            if (\is_array($v)) {
-                $this->prepareArrayForSerializeRecursive($v);
-                return $v;
+            $e = null;
+            // __serialize return array OR throw exception
+            $v = $this->tryCallMethod($obj, '__serialize', exception: $e);
+            if ($e === null) {
+                if (\is_array($v)) {
+                    $this->prepareArrayForSerializeRecursive($v);
+                    return $v;
+                }
             }
         }
 
@@ -110,10 +143,13 @@ class Other
         }
 
         if (\method_exists($obj, 'toArray')) {
-            $v = $this->tryCallMethod($obj, 'toArray');
-            if (\is_array($v)) {
-                $this->prepareArrayForSerializeRecursive($v);
-                return $v;
+            $e = null;
+            $v = $this->tryCallMethod($obj, 'toArray', exception: $e);
+            if ($e === null) {
+                if (\is_array($v)) {
+                    $this->prepareArrayForSerializeRecursive($v);
+                    return $v;
+                }
             }
         }
 
@@ -123,7 +159,7 @@ class Other
     }
 
     // ------------------------------------------------------------------
-    // 
+    // reflection
     // ------------------------------------------------------------------
 
     /**
