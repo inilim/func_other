@@ -116,7 +116,7 @@ class Other
             $v = $this->tryCallMethod($obj, 'jsonSerialize', exception: $e);
             // jsonSerialize return mixed OR throw exception
             if ($e === null) {
-                $this->prepareArrayForSerializeRecursive([$v]);
+                $this->prepareArrayForSerializeRecursive($v = [$v]);
                 return $v[0];
             }
         }
@@ -126,7 +126,7 @@ class Other
             // __serialize return mixed OR throw exception
             $v = $this->tryCallMethod($obj, '__serialize', exception: $e);
             if ($e === null) {
-                $this->prepareArrayForSerializeRecursive([$v]);
+                $this->prepareArrayForSerializeRecursive($v = [$v]);
                 return $v[0];
             }
         }
