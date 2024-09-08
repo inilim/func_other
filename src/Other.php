@@ -111,8 +111,9 @@ class Other
      */
     function prepareObjForSerialize(object $obj)
     {
+        $e = null;
+
         if ($obj instanceof \JsonSerializable) {
-            $e = null;
             $v = $this->tryCallMethod($obj, 'jsonSerialize', exception: $e);
             // jsonSerialize return mixed OR throw exception
             if ($e === null) {
@@ -121,9 +122,9 @@ class Other
                 return $v[0];
             }
         }
+        $e = null;
 
         if ($obj instanceof \Serializable) {
-            $e = null;
             // __serialize return mixed OR throw exception
             $v = $this->tryCallMethod($obj, '__serialize', exception: $e);
             if ($e === null) {
@@ -132,20 +133,25 @@ class Other
                 return $v[0];
             }
         }
+        $e = null;
 
         if ($obj instanceof \UnitEnum) {
             return $obj::class . '::' . $obj->name;
         }
 
         if (\method_exists($obj, 'toArray')) {
-            $e = null;
             $v = $this->tryCallMethod($obj, 'toArray', exception: $e);
-            if ($e === null) {
-                if (\is_array($v)) {
-                    $this->prepareArrayForSerializeRecursive($v);
-                    return $v;
-                }
+            if ($e === null && \is_array($v)) {
+                $this->prepareArrayForSerializeRecursive($v);
+                return $v;
             }
+        }
+        $e = null;
+
+        if ($obj instanceof \Throwable) {
+            $v = $this->getExceptionDetails($obj, true);
+            $this->prepareArrayForSerializeRecursive($v);
+            return $v;
         }
 
         $v = (array)$obj;
